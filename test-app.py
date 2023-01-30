@@ -6,10 +6,10 @@ from json import dumps
 
 # some images to test the application
 test_images = ['test-images/face_happy.png','test-images/face_sad.jpg','test-images/osa-ora.jpg']
-service_url = 'http://localhost:5000/predict'
+service_url = 'http://localhost:8080/predict'
 
 # You can also do the from the console by executing
-# (echo -n '{"image": "'; base64 test-images/face_sad.jpg; echo '"}') | curl -H "Content-Type: application/json" -d @- http://localhost:5000/predict
+# (echo -n '{"image": "'; base64 test-images/face_sad.jpg; echo '"}') | curl -H "Content-Type: application/json" -d @- http://localhost:8080/predict
 {"expression":"Sad"}
 # change the image name and application URL
 
