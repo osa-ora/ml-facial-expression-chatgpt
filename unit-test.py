@@ -1,6 +1,7 @@
 import unittest
 import base64
 import requests
+from app import app
 
 class PredictTestCase(unittest.TestCase):
 
@@ -8,6 +9,8 @@ class PredictTestCase(unittest.TestCase):
         # set up the test client
         self.url = "http://localhost:5000/predict"
         self.header = {'Content-Type': 'application/json'}
+        self.app = app.test_client()
+        
     def test_predict_sad(self):
         with open("test-images/face_sad.jpg", "rb") as image_file:
             encoded_string = base64.b64encode(image_file.read()).decode('utf-8')
