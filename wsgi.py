@@ -69,3 +69,5 @@ def predict():
         return jsonify(response)
     else:
         return "Invalid request method, only Post is supported"
+if __name__ == '__main__':
+    app.run(port=8080)
