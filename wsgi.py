@@ -5,6 +5,8 @@ import numpy as np
 from PIL import Image
 import requests
 import tensorflow as tf
+tf.compat.v1.logging.set_verbosity(tf.compat.v1.logging.ERROR)
+tf.get_logger().setLevel('ERROR')
 import base64
 import os
 from os.path import splitext,basename
