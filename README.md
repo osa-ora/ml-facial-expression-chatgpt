@@ -124,10 +124,5 @@ Copy the route URL and invoke it with any car images that you have to test the a
 {'expression': 'RESULT'}
 ```
 
-Other useful workshops and materials about Red Hat OpenShift Data Science: 
+For other useful workshops and materials about Red Hat OpenShift Data Science: 
 https://developers.redhat.com/learn/openshift-data-science
-
-
-
-
-
