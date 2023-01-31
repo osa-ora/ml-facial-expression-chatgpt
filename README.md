@@ -75,6 +75,8 @@ Once created, click on the route to open the root which is mapped to the health 
 
 Copy the route URL and invoke it with any facial images (48x48 grayscale, either png or jpg). 
 
+One note regarding Python source2Image, for the simple Python application you can just name the entry point for your application as in our case as app.py and it will be the entry point for your container, otherwise you can just set either APP_MODULE, APP_FILE or APP_SCRIPT environment variables pointing to the entry point for your container.
+
 ```
 (echo -n '{"image": "'; base64 {IMAGE-NAME-HERE}; echo '"}') | curl -H "Content-Type: application/json" -d @- {{ROUTE-URL-HERE}/predict
 
