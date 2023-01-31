@@ -2,6 +2,12 @@ Red Hat OpenShift Data Science (RHODS) is an easy-to-configure MLOps platform fo
 
 The project is detecting the facial expression for images with size 48x48 & grayscale, here we will demo this application using OpenShift and OpenShift Data Science showing how efficient we can use OpenShift in handling the different milestones in ML application.
 
+This ML project built by working with ChatGPT which gives the core ML file: model-build.ipynb   
+
+<img width="822" alt="Screen Shot 2023-01-31 at 16 00 09" src="https://user-images.githubusercontent.com/18471537/215754143-bc5e54cb-9b1f-469e-ac5b-3d840d3f9889.png">
+
+It was nice experience to use a ML application to build another ML model, it is quiet simple and it can be also written from the different source codes available all over the internet but it is just funny to use ChatGPT in this project :)
+
 ## 1) Get The Environment
 
 We need an OpenShift cluster to use, the easiest way is to utilize the Red Hat OpenShift Developer Sandbox which gives us a free trial of OpenShift and it includes access to OpenShift Data Science.
