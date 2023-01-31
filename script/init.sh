@@ -20,6 +20,7 @@ echo "Press [Enter] key to resume..."
 read
 echo "Create Tekton Pipeline for ML Python demo App ..."
 oc apply -f https://raw.githubusercontent.com/tektoncd/catalog/main/task/send-to-webhook-slack/0.1/send-to-webhook-slack.yaml -n $1
+apply -f https://api.hub.tekton.dev/v1/resource/tekton/task/pytest/0.1/raw -n $1
 oc apply -f https://raw.githubusercontent.com/osa-ora/ml-facial-expression-chatgpt/main/cicd/tekton.yaml -n $1
 echo "kind: Secret
 apiVersion: v1
