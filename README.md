@@ -2,7 +2,6 @@ Red Hat OpenShift Data Science (RHODS) is an easy-to-configure MLOps platform fo
 
 The project is detecting the facial expression for images with size 48x48 & grayscale, here we will demo this application using OpenShift and OpenShift Data Science showing how efficient we can use OpenShift in handling the different milestones in ML application.
 
-
 ## 1) Get The Environment
 
 We need an OpenShift cluster to use, the easiest way is to utilize the Red Hat OpenShift Developer Sandbox which gives us a free trial of OpenShift and it includes access to OpenShift Data Science.
@@ -109,7 +108,9 @@ This will create and execute the pipeline in the specified project. If everythin
 
 
 Now, we can automate the build and deployment using the tekton pipeline for more efficient ML-OPs.
-<img width="301" alt="Screen Shot 2023-01-30 at 08 28 19" src="https://user-images.githubusercontent.com/18471537/215387548-3157459e-e60f-44eb-a87c-9ee2cb89f151.png">
+
+
+<img width="195" alt="Screen Shot 2023-01-31 at 13 46 32" src="https://user-images.githubusercontent.com/18471537/215725502-9376eaf9-da40-45cc-990e-babb0fc10c19.png">
 
 Copy the route URL and invoke it with any car images that you have to test the application. (should be either png or jpg)
 
