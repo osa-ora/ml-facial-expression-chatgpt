@@ -109,10 +109,9 @@ This will create and execute the pipeline in the specified project. If everythin
 
 The pipeline execution will start and hopefully everything is completed successfully.
 
-
+<img width="1597" alt="Screen Shot 2023-01-31 at 15 55 25" src="https://user-images.githubusercontent.com/18471537/215753306-04a65d5e-b876-4daf-bf75-e5b8e69496ac.png">
 
 Now, we can automate the build and deployment using the tekton pipeline for more efficient ML-OPs.
-
 
 <img width="195" alt="Screen Shot 2023-01-31 at 13 46 32" src="https://user-images.githubusercontent.com/18471537/215725502-9376eaf9-da40-45cc-990e-babb0fc10c19.png">
 
