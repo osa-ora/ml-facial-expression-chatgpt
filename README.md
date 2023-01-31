@@ -97,13 +97,17 @@ Send a final slack message with the pipeline results (if slack parameter is set 
 /login to OpenShift cluster
 oc login ...
 //download the script
-curl https://raw.githubusercontent.com/osa-ora/ml-sample-demo/main/script/init.sh > init.sh
+curl https://raw.githubusercontent.com/osa-ora/ml-facial-expression-chatgpt/main/script/init.sh > init.sh
 chmod +x init.sh
 //execute the script with 2 parameters: the name of "ML" project, and slack channel webhook url (to send notifications)
 ./init.sh ooransa-dev https://hooks.slack.co...{fill in your slack url here}
 
 ```
 This will create and execute the pipeline in the specified project. If everything is configured properly, you will see something like:
+
+<img width="1493" alt="Screen Shot 2023-01-31 at 15 28 47" src="https://user-images.githubusercontent.com/18471537/215748137-d5f22039-6e90-40de-8e36-0a30c576ad53.png">
+
+The pipeline execution will start and hopefully everything is completed successfully.
 
 
 
