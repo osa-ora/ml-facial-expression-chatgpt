@@ -49,9 +49,79 @@ Another alternative to test the application is to run the unit-test.py from the 
 
 <img width="868" alt="Screen Shot 2023-01-31 at 13 20 53" src="https://user-images.githubusercontent.com/18471537/215719643-84349afb-1c38-4d34-bb6f-789581be07b2.png">
 
+## 4) ML Deployment
+
+Once we have and ready ML application/APIs we need to experience how to deploy them on OpenShift.
+You have 2 choices, one is utilizing the Source2Image OpenShift capability and giving all the build process to OpenShift or build a pipeline so you can enrich the lifecycle and automate many parts and integrate many options such as security and others.
+
+### Using Source2Image
+Open OpenShift Developer console, select "Add" and then select "from Git" Repository:
+
+<img width="179" alt="Screen Shot 2023-01-27 at 18 41 31" src="https://user-images.githubusercontent.com/18471537/215113469-8ef128f5-bf04-4f1c-8741-11da0d6cb864.png">
+
+Provide the required details as following:
+In the Git Repo URL field, enter: "https://github.com/osa-ora/ml-facial-expression-chatgpt"
+Select "main" branch
+From the Builder Image version list, select "Python 3.8-ubi7"
+Resources type “Deployment”
+Then click on the create button.
+
+Once created, click on the route to open the root which is mapped to the health check API and we can see the status is ok.
+
+Copy the route URL and invoke it with any facial images (48x48 grayscale, either png or jpg). 
+
+```
+(echo -n '{"image": "'; base64 {IMAGE-NAME-HERE}; echo '"}') | curl -H "Content-Type: application/json" -d @- {{ROUTE-URL-HERE}/predict
+
+//if everything is okay it will return response like:
+{'expression': 'RESULT'}
+```
+
+Now, we can manually run the BuildConfig to build new application version or we can auto-trigger it with new Git commits.
+
+### Using OpenShift Pipeline
+By using OpenShift Pipeline based on Tekton we can incorporate many options such as notification, testing, security scanning, etc.
+
+The pipelines will do the following:
+
+Send slack message "Started" (if slack parameter is set to true)
+Git the code from the GitHub repository
+Run the unit tests
+Build the application using source2image
+Deploy the application (for first time pipeline execution)
+Expose a route to the application (for first time pipeline execution)
+Run health check to test the application is running
+Send a final slack message with the pipeline results (if slack parameter is set to true)
+
+
+```
+/login to OpenShift cluster
+oc login ...
+//download the script
+curl https://raw.githubusercontent.com/osa-ora/ml-sample-demo/main/script/init.sh > init.sh
+chmod +x init.sh
+//execute the script with 2 parameters: the name of "ML" project, and slack channel webhook url (to send notifications)
+./init.sh ooransa-dev https://hooks.slack.co...{fill in your slack url here}
+
+```
+This will create and execute the pipeline in the specified project. If everything is configured properly, you will see something like:
 
 
 
+Now, we can automate the build and deployment using the tekton pipeline for more efficient ML-OPs.
+<img width="301" alt="Screen Shot 2023-01-30 at 08 28 19" src="https://user-images.githubusercontent.com/18471537/215387548-3157459e-e60f-44eb-a87c-9ee2cb89f151.png">
+
+Copy the route URL and invoke it with any car images that you have to test the application. (should be either png or jpg)
+
+```
+(echo -n '{"image": "'; base64 {IMAGE-NAME-HERE}; echo '"}') | curl -H "Content-Type: application/json" -d @- {{ROUTE-URL-HERE}/predictions
+
+//if everything is okay it will return response like:
+{'expression': 'RESULT'}
+```
+
+Other useful workshops and materials about Red Hat OpenShift Data Science: 
+https://developers.redhat.com/learn/openshift-data-science
 
 
 
