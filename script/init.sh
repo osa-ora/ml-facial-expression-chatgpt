@@ -34,5 +34,5 @@ echo "Make sure tkn command line tool is available in your command prompt"
 echo "Press [Enter] key to resume..."
 read
 echo "Running Tekton pipeline for ML Python app …"
-tkn pipeline start end-to-end-pipeline --param first-run=true --param proj-name=$1 --param slack_enabled=true --workspace name=app-workspace,volumeClaimTemplateFile=https://raw.githubusercontent.com/openshift/pipelines-tutorial/pipelines-1.5/01_pipeline/03_persistent_volume_claim.yaml
+tkn pipeline start end-to-end-pipeline --param first-run=true --param proj-name=$1 --param slack-enabled=true --workspace name=app-workspace,volumeClaimTemplateFile=https://raw.githubusercontent.com/openshift/pipelines-tutorial/pipelines-1.5/01_pipeline/03_persistent_volume_claim.yaml
 echo "Done!!"
