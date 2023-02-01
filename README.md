@@ -1,12 +1,22 @@
 Red Hat OpenShift Data Science (RHODS) is an easy-to-configure MLOps platform for building and deploying AI/ML models and intelligent applications. In this demo we will go through how to use it to build and deploy ML applications easily.
 
-The project is detecting the facial expression for images with size 48x48 & grayscale, here we will demo this application using OpenShift and OpenShift Data Science showing how efficient we can use OpenShift in handling the different milestones in ML application.
+The project aim to detect the facial expression for images with size 48x48 & in grayscale, here we will demo this application using OpenShift and OpenShift Data Science showing how efficient and easily we can use OpenShift in handling the different milestones in ML application.
 
-This ML project built by working with ChatGPT which gives the core ML file: model-build.ipynb   
+This ML project built by working with ChatGPT which gives the core ML codes and I enrich it with some features and additional files. This is how the ML is changing the way we used to work even in building applications.  
 
 <img width="822" alt="Screen Shot 2023-01-31 at 16 00 09" src="https://user-images.githubusercontent.com/18471537/215754143-bc5e54cb-9b1f-469e-ac5b-3d840d3f9889.png">
 
 It was nice experience to use a ML application to build another ML model, it is quiet simple and it can be also written from the different source codes available all over the internet but it is just funny to use ChatGPT in this project :)
+
+As a typical ML application, it has the following milestones:
+
+![Blog-4-MLOPs-3](https://user-images.githubusercontent.com/18471537/215968348-99943373-6a45-4c12-8745-426f615b3a65.png)
+
+In our demo, we will download data that was collected and labelled (from kaggle.com), then we will move to data exploration and model training and tuning. Finally we will deploy the model and monitor it for further improvements.  
+
+For effieient deployment, we will need to build a pipeline and include some steps like sending notifications, running unit tests and doing sanity or smoke test at the end to make sure everything working as planned.  
+
+It can be further improved by using GitOps to handle the deployment.
 
 ## 1) Get The Environment
 
