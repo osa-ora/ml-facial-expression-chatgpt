@@ -1,0 +1,199 @@
+apiVersion: tekton.dev/v1beta1
+kind: Pipeline
+metadata:
+  name: cicd-gitops-pipeline
+spec:
+  finally:
+    - name: slack-final-notification
+      params:
+        - name: webhook-secret
+          value: webhook-secret
+        - name: message
+          value: >-
+            Pipeline execution results $(tasks.status) for $(params.git_url) -
+            $(params.git_branch)
+        - name: bot-name
+          value: Tekton Bot
+        - name: icon-emoji
+          value: ':robot_face:'
+      taskRef:
+        kind: Task
+        name: send-to-webhook-slack
+      when:
+        - input: $(params.slack-enabled)
+          operator: in
+          values:
+            - 'true'
+  params:
+    - default: facial-detection-service
+      description: Application Name
+      name: app-name
+      type: string
+    - default: ooransa-dev
+      description: Project Name
+      name: proj-name
+      type: string
+    - default: 'true'
+      description: Slack Enabled
+      name: slack-enabled
+      type: string
+    - default: 'https://github.com/osa-ora/ml-facial-expression-chatgpt'
+      description: Git Repo URL
+      name: git_url
+      type: string
+    - default: main
+      description: Git Branch
+      name: git_branch
+      type: string
+    - default: dev
+      description: Image Tag Name
+      name: tag-name
+      type: string
+  tasks:
+    - name: git-clone
+      params:
+        - name: url
+          value: $(params.git_url)
+        - name: revision
+          value: $(params.git_branch)
+        - name: submodules
+          value: 'true'
+        - name: depth
+          value: '1'
+        - name: sslVerify
+          value: 'true'
+        - name: crtFileName
+          value: ca-bundle.crt
+        - name: deleteExisting
+          value: 'true'
+        - name: verbose
+          value: 'true'
+        - name: gitInitImage
+          value: >-
+            registry.redhat.io/openshift-pipelines/pipelines-git-init-rhel8@sha256:a538c423e7a11aae6ae582a411fdb090936458075f99af4ce5add038bb6983e8
+        - name: userHome
+          value: /tekton/home
+      runAfter:
+        - send-to-webhook-slack
+      taskRef:
+        kind: ClusterTask
+        name: git-clone
+      workspaces:
+        - name: output
+          workspace: app-workspace
+    - name: unit-test-pytest
+      params:
+        - name: PYTHON
+          value: '3.8'
+        - name: REQUIREMENTS_FILE
+          value: requirements.txt
+        - name: ARGS
+          value: unit-test.py
+        - name: SOURCE_PATH
+          value: /workspace/source/
+      runAfter:
+        - git-clone
+      taskRef:
+        kind: Task
+        name: pytest
+      workspaces:
+        - name: source
+          workspace: app-workspace
+    - name: build-s2i-python
+      params:
+        - name: VERSION
+          value: 3.8-ubi7
+        - name: PATH_CONTEXT
+          value: .
+        - name: TLSVERIFY
+          value: 'true'
+        - name: IMAGE
+          value: >-
+            image-registry.openshift-image-registry.svc:5000/$(params.proj-name)/$(params.app-name)
+        - name: BUILDER_IMAGE
+          value: >-
+            registry.redhat.io/rhel8/buildah@sha256:0a86ecbdfbe86e9d225b7fe4b090a0dd6d323f8afdfdf2bd933ff223ddb53320
+        - name: SKIP_PUSH
+          value: 'false'
+        - name: ENV_VARS
+          value: []
+      runAfter:
+        - unit-test-pytest
+      taskRef:
+        kind: ClusterTask
+        name: s2i-python
+      workspaces:
+        - name: source
+          workspace: app-workspace
+    - name: send-to-webhook-slack
+      params:
+        - name: webhook-secret
+          value: webhook-secret
+        - name: message
+          value: >-
+            Pipeline execution started for $(params.git_url) -
+            $(params.git_branch)
+        - name: bot-name
+          value: Tekton Bot
+        - name: icon-emoji
+          value: ':robot_face:'
+      taskRef:
+        kind: Task
+        name: send-to-webhook-slack
+      when:
+        - input: $(params.slack-enabled)
+          operator: in
+          values:
+            - 'true'
+    - name: gitops-deployment
+      params:
+        - name: SCRIPT
+          value: >-
+            oc apply -f
+            https://raw.githubusercontent.com/osa-ora/ml-facial-expression-chatgpt/main/cicd/app.yaml
+        - name: VERSION
+          value: latest
+      runAfter:
+        - tag-image
+      taskRef:
+        kind: ClusterTask
+        name: openshift-client
+    - name: wait-for-deployment
+      params:
+        - name: SCRIPT
+          value: sleep 25
+        - name: VERSION
+          value: latest
+      runAfter:
+        - gitops-deployment
+      taskRef:
+        kind: ClusterTask
+        name: openshift-client
+    - name: smoke-test
+      params:
+        - name: SCRIPT
+          value: >-
+            curl $(oc get route $(params.app-name) -n=$(params.proj-name) -o
+            jsonpath='{.spec.host}')/ | grep 'ok'
+        - name: VERSION
+          value: latest
+      runAfter:
+        - wait-for-deployment
+      taskRef:
+        kind: ClusterTask
+        name: openshift-client
+    - name: tag-image
+      params:
+        - name: SCRIPT
+          value: >-
+            oc tag  $(params.proj-name)/$(params.app-name):latest
+            $(params.proj-name)/$(params.app-name):$(params.tag-name)
+        - name: VERSION
+          value: latest
+      runAfter:
+        - build-s2i-python
+      taskRef:
+        kind: ClusterTask
+        name: openshift-client
+  workspaces:
+    - name: app-workspace
