@@ -69,7 +69,7 @@ Another alternative to test the application is to run the unit-test.py from the 
 Once we have and ready ML application/APIs we need to experience how to deploy them on OpenShift.
 You have 2 choices, one is utilizing the Source2Image OpenShift capability and giving all the build process to OpenShift or build a pipeline so you can enrich the lifecycle and automate many parts and integrate many options such as security and others.
 
-### Using Source2Image
+### A) Using Source2Image
 Open OpenShift Developer console, select "Add" and then select "from Git" Repository:
 
 <img width="179" alt="Screen Shot 2023-01-27 at 18 41 31" src="https://user-images.githubusercontent.com/18471537/215113469-8ef128f5-bf04-4f1c-8741-11da0d6cb864.png">
@@ -96,19 +96,19 @@ One note regarding Python source2Image, for the simple Python application you ca
 
 Now, we can manually run the BuildConfig to build new application version or we can auto-trigger it with new Git commits.
 
-### Using OpenShift Pipeline
+### B) Using OpenShift Pipeline
 By using OpenShift Pipeline based on Tekton we can incorporate many options such as notification, testing, security scanning, etc.
 
 The pipelines will do the following:
 
-Send slack message "Started" (if slack parameter is set to true)
-Git the code from the GitHub repository
-Run the unit tests
-Build the application using source2image
-Deploy the application (for first time pipeline execution)
-Expose a route to the application (for first time pipeline execution)
-Run health check to test the application is running
-Send a final slack message with the pipeline results (if slack parameter is set to true)
+- Send slack message "Started" (if slack parameter is set to true)
+- Git the code from the GitHub repository
+- Run the unit tests
+- Build the application using source2image
+- Deploy the application (for first time pipeline execution)
+- Expose a route to the application (for first time pipeline execution)
+- Run health check to test the application is running
+- Send a final slack message with the pipeline results (if slack parameter is set to true)
 
 
 ```
@@ -121,7 +121,7 @@ chmod +x init.sh
 ./init.sh ooransa-dev https://hooks.slack.co...{fill in your slack url here}
 
 ```
-This will create and execute the pipeline in the specified project. If everything is configured properly, you will see something like:
+This will create and execute the pipeline in the specified project. If everything is configured properly, you will see a pipeline like:
 
 <img width="1493" alt="Screen Shot 2023-01-31 at 15 28 47" src="https://user-images.githubusercontent.com/18471537/215748137-d5f22039-6e90-40de-8e36-0a30c576ad53.png">
 
@@ -132,6 +132,61 @@ The pipeline execution will start and hopefully everything is completed successf
 Now, we can automate the build and deployment using the tekton pipeline for more efficient ML-OPs.
 
 <img width="195" alt="Screen Shot 2023-01-31 at 13 46 32" src="https://user-images.githubusercontent.com/18471537/215725502-9376eaf9-da40-45cc-990e-babb0fc10c19.png">
+
+Copy the route URL and invoke it with any car images that you have to test the application. (should be either png or jpg)
+
+```
+(echo -n '{"image": "'; base64 {IMAGE-NAME-HERE}; echo '"}') | curl -H "Content-Type: application/json" -d @- {{ROUTE-URL-HERE}/predictions
+
+//if everything is okay it will return response like:
+{'expression': 'RESULT'}
+```
+
+### C) Using OpenShift Pipeline & GitOps (end-to-end)
+We can extend now our demo to include also GitOps for deployment, we will modify the pipeline to do the following tasks:
+The pipelines will do the following:
+
+- Send slack message "Started" (if slack parameter is set to true)
+- Git the code from the GitHub repository
+- Run the unit tests
+- Build the application using source2image
+- Tag the image (default is dev tag)
+- Define the GitOps Configurations for the application
+- Run health check to test the application is running
+- Send a final slack message with the pipeline results (if slack parameter is set to true)
+
+It should be noted that, GitOps depends on the Git repository as a source of truth for all your application configurations, so you can modify any definition in the Git Repository in the gitops folder (it defines the application components) and cicd/app.yaml which defined the GitOps configurations (including application name and project/namespace).
+
+Prerequisite: 
+
+- OpenShift Pipeline already installed on OpenShift
+- OpenShift GitOps already installed on OpenShift with ArgoCD instance is created with privilege to deploy on the target namespace/project
+- Login to OpenShift cluster (using a privileged user)
+
+
+```
+/login to OpenShift cluster
+oc login ...
+//download the script
+curl https://raw.githubusercontent.com/osa-ora/ml-facial-expression-chatgpt/main/script/init-gitops.sh > init-gitops.sh
+chmod +x init-gitops.sh
+//execute the script with 2 parameters: the name of "ML" project, and slack channel webhook url (to send notifications)
+./init-gitops.sh ooransa-dev https://hooks.slack.co...{fill in your slack url here}
+
+```
+This will create and execute the pipeline in the specified project. If everything is configured properly, you will see a pipeline like:
+
+<img width="1483" alt="Screen Shot 2023-02-02 at 13 55 53" src="https://user-images.githubusercontent.com/18471537/216292559-a868c6ae-19ee-4e6d-bc94-cdf9b1340d9c.png">
+
+The pipeline execution will start and hopefully everything is completed successfully.
+
+<img width="1729" alt="Screen Shot 2023-02-02 at 13 57 12" src="https://user-images.githubusercontent.com/18471537/216292891-94901021-8944-4b2d-9893-203a05c93194.png">
+
+Now, we can automate the build and delegate the deployment to GitOps for more efficient ML-OPs.
+
+If you look at OpenShift GitOps ArgoCD, you can see the application is automatically sync and deployed as per our GitOps configurations:
+
+<img width="1017" alt="Screen Shot 2023-02-02 at 13 58 15" src="https://user-images.githubusercontent.com/18471537/216293100-87da261a-bc0f-4fb5-bff5-82acad061626.png">
 
 Copy the route URL and invoke it with any car images that you have to test the application. (should be either png or jpg)
 
