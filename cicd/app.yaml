@@ -1,0 +1,19 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: facial-ml-app
+spec:
+  destination:
+    namespace: ooransa-dev
+    server: 'https://kubernetes.default.svc'
+  project: default
+  source:
+    path: gitops
+    repoURL: 'https://github.com/osa-ora/ml-facial-expression-chatgpt'
+    targetRevision: main
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - Replace=true
