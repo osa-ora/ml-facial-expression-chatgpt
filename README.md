@@ -143,8 +143,9 @@ Copy the route URL and invoke it with any car images that you have to test the a
 ```
 
 ### C) Using OpenShift Pipeline & GitOps (end-to-end)
-We can extend now our demo to include also GitOps for deployment, we will modify the pipeline to do the following tasks:
-The pipelines will do the following:
+We can extend now our demo to include also GitOps for deployment, but you need to make sure the OpenShift cluster has the OpenShift GitOps operator available or already installed there. 
+
+The new pipeline script will do the following tasks:
 
 - Send slack message "Started" (if slack parameter is set to true)
 - Git the code from the GitHub repository
