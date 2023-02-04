@@ -14,9 +14,12 @@ As a typical ML application, it has the following milestones:
 
 In our demo, we will download data that was collected and labelled (from kaggle.com), then we will move to data exploration and model training and tuning. Finally we will deploy the model and monitor it for further improvements.  
 
-For effieient deployment, we will need to build a pipeline and include some steps like sending notifications, running unit tests and doing sanity or smoke test at the end to make sure everything working as planned.  
+For effieient deployment, we will need to build a tekton pipeline and include some steps like sending notifications, running unit tests and doing sanity or smoke test at the end to make sure everything working as planned.  
 
-It can be further improved by using GitOps to handle the deployment.
+Finally, we will further improve the deploymet pipeline by using OpenShift GitOps for the deployment part.
+
+![demo-pipelines](https://user-images.githubusercontent.com/18471537/216767022-3b8a5932-c1ff-4ce1-b6f5-da19c5f8c1ab.gif)
+
 
 ## 1) Get The Environment
 
