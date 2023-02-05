@@ -58,10 +58,16 @@ You can now run the Notebook using the file : model-build.ipynb which contains a
 
 <img width="1142" alt="Screen Shot 2023-01-31 at 13 15 37" src="https://user-images.githubusercontent.com/18471537/215718404-7e43b03e-0950-42cc-b46d-d23ced00ccf7.png">
 
-To run the model, you can just run the app.py file which will listen to port 8080, now you can execute the test-app.py 
-<img width="871" alt="Screen Shot 2023-01-31 at 13 18 40" src="https://user-images.githubusercontent.com/18471537/215719155-a7261bd2-9bfe-4223-800e-af885875439e.png">
+To run the model, Open a terminal and execute:
 
-if you get an error that flask module is not recognized, you can just execute "pip install flask" from a terminal.
+```
+pip install flask
+```
+<img width="1525" alt="12" src="https://user-images.githubusercontent.com/18471537/216810578-4bfd54c0-40c0-44d5-8548-84dd30bdfac8.png">
+
+You can now run the app.py file which will expose the predict API and listen to port 8080 (can be changed from the code), then execute the test-app.py which will test the application APIs with some samples images.
+
+<img width="871" alt="Screen Shot 2023-01-31 at 13 18 40" src="https://user-images.githubusercontent.com/18471537/215719155-a7261bd2-9bfe-4223-800e-af885875439e.png">
 
 Another alternative to test the application is to run the unit-test.py from the terminal.
 
@@ -144,6 +150,9 @@ Copy the route URL and invoke it with any car images that you have to test the a
 //if everything is okay it will return response like:
 {'expression': 'RESULT'}
 ```
+
+![Untitled](https://user-images.githubusercontent.com/18471537/216810716-9730d2b5-f67a-4b71-b197-641f9bea78e5.png)
+
 
 ### C) Using OpenShift Pipeline & GitOps (end-to-end)
 We can extend now our demo to include also GitOps for deployment, but you need to make sure the OpenShift cluster has the OpenShift GitOps operator available or already installed there. 
