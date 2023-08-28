@@ -2,7 +2,6 @@ apiVersion: tekton.dev/v1beta1
 kind: Pipeline
 metadata:
   name: cicd-gitops-pipeline
-  namespace: ooransa-dev
 spec:
   params:
     - default: facial-detection-service
