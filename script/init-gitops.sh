@@ -31,6 +31,9 @@ metadata:
 stringData:
   url: $2" | oc create -f -
 
+oc policy add-role-to-user edit system:serviceaccount:$1:pipeline -n openshift-gitops
+oc policy add-role-to-user edit system:serviceaccount:openshift-gitops:openshift-gitops-argocd-application-controller -n $1
+oc apply -f https://raw.githubusercontent.com/osa-ora/simple_java_maven/main/cicd/tekton-gitops.yaml -n $1
 
 echo "Make sure tkn command line tool is available in your command prompt"
 echo "Press [Enter] key to resume..."
