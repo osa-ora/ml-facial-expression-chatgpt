@@ -140,7 +140,7 @@ spec:
         - name: SCRIPT
           value: >-
             oc apply -f
-            https://raw.githubusercontent.com/osa-ora/ml-facial-expression-chatgpt/main/cicd/app.yaml
+            https://raw.githubusercontent.com/osa-ora/ml-facial-expression-chatgpt/main/cicd/app.yaml -n openshift-gitops
         - name: VERSION
           value: latest
       runAfter:
