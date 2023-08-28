@@ -1,29 +1,8 @@
-apiVersion: tekton.dev/v1
+apiVersion: tekton.dev/v1beta1
 kind: Pipeline
 metadata:
   name: cicd-gitops-pipeline
 spec:
-  finally:
-    - name: slack-final-notification
-      params:
-        - name: webhook-secret
-          value: webhook-secret
-        - name: message
-          value: >-
-            Pipeline execution results $(tasks.status) for $(params.git_url) -
-            $(params.git_branch)
-        - name: bot-name
-          value: Tekton Bot
-        - name: icon-emoji
-          value: ':robot_face:'
-      taskRef:
-        kind: Task
-        name: send-to-webhook-slack
-      when:
-        - input: $(params.slack-enabled)
-          operator: in
-          values:
-            - 'true'
   params:
     - default: facial-detection-service
       description: Application Name
@@ -37,6 +16,10 @@ spec:
       description: Slack Enabled
       name: slack-enabled
       type: string
+    - default: 'false'
+      description: First Run
+      name: first-run
+      type: string
     - default: 'https://github.com/osa-ora/ml-facial-expression-chatgpt'
       description: Git Repo URL
       name: git_url
@@ -45,10 +28,12 @@ spec:
       description: Git Branch
       name: git_branch
       type: string
-    - default: dev
-      description: Image Tag Name
-      name: tag-name
-      type: string
+    - name: run-unit-test
+      description: Unit Test
+      default: 'false'
+  resources: []
+  workspaces:
+    - name: app-workspace
   tasks:
     - name: git-clone
       params:
@@ -99,6 +84,11 @@ spec:
       workspaces:
         - name: source
           workspace: app-workspace
+      when:
+        - input: $(params.run-unit-test)
+          operator: in
+          values:
+            - 'true'
     - name: build-s2i-python
       params:
         - name: VERSION
@@ -145,19 +135,41 @@ spec:
           operator: in
           values:
             - 'true'
-    - name: gitops-deployment
+    - name: deploy-app
       params:
         - name: SCRIPT
           value: >-
-            oc apply -f
-            https://raw.githubusercontent.com/osa-ora/ml-facial-expression-chatgpt/main/cicd/app.yaml
+            oc new-app --docker-image
+            image-registry.openshift-image-registry.svc:5000/$(params.proj-name)/$(params.app-name)
+            -n $(params.proj-name)
         - name: VERSION
           value: latest
       runAfter:
-        - tag-image
+        - build-s2i-python
       taskRef:
         kind: ClusterTask
         name: openshift-client
+      when:
+        - input: $(params.first-run)
+          operator: in
+          values:
+            - 'true'
+    - name: expose-app
+      params:
+        - name: SCRIPT
+          value: oc expose service/$(params.app-name) -n $(params.proj-name)
+        - name: VERSION
+          value: latest
+      runAfter:
+        - deploy-app
+      taskRef:
+        kind: ClusterTask
+        name: openshift-client
+      when:
+        - input: $(params.first-run)
+          operator: in
+          values:
+            - 'true'
     - name: wait-for-deployment
       params:
         - name: SCRIPT
@@ -165,7 +177,7 @@ spec:
         - name: VERSION
           value: latest
       runAfter:
-        - gitops-deployment
+        - expose-app
       taskRef:
         kind: ClusterTask
         name: openshift-client
@@ -182,18 +194,24 @@ spec:
       taskRef:
         kind: ClusterTask
         name: openshift-client
-    - name: tag-image
+  finally:
+    - name: slack-final-notification
       params:
-        - name: SCRIPT
+        - name: webhook-secret
+          value: webhook-secret
+        - name: message
           value: >-
-            oc tag  $(params.proj-name)/$(params.app-name):latest
-            $(params.proj-name)/$(params.app-name):$(params.tag-name)
-        - name: VERSION
-          value: latest
-      runAfter:
-        - build-s2i-python
+            Pipeline execution results $(tasks.status) for $(params.git_url) -
+            $(params.git_branch)
+        - name: bot-name
+          value: Tekton Bot
+        - name: icon-emoji
+          value: ':robot_face:'
       taskRef:
-        kind: ClusterTask
-        name: openshift-client
-  workspaces:
-    - name: app-workspace
+        kind: Task
+        name: send-to-webhook-slack
+      when:
+        - input: $(params.slack-enabled)
+          operator: in
+          values:
+            - 'true'
